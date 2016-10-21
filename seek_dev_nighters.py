@@ -26,9 +26,9 @@ def get_midnighters(record):
 
 
 if __name__ == '__main__':
-    owls = []
+    owls = set()
     for record in load_attempts():
         owl = get_midnighters(record)
         if owl:
-            owls.append(owl)
+            owls.add(owl)
     print('\n'.join(owls))
