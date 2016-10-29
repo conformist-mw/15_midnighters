@@ -1,6 +1,6 @@
 from pytz import timezone
 from datetime import time
-from datetime import datetime as DT
+from datetime import datetime
 import requests
 
 
@@ -14,11 +14,11 @@ def load_attempts():
             yield record
 
 
-def get_midnighters(record):
+def is_midnighter(record):
     moscow_tz = timezone('Europe/Moscow')
     user_tz = timezone(record['timezone'])
     if record['timestamp']:
-        user_dt = user_tz.localize(DT.fromtimestamp(record['timestamp']))
+        user_dt = user_tz.localize(datetime.fromtimestamp(record['timestamp']))
         adj_user_dt = user_dt.astimezone(moscow_tz)
         user_time = time(adj_user_dt.hour, adj_user_dt.minute)
         if time(00, 00) < user_time < time(6, 00):
@@ -26,9 +26,9 @@ def get_midnighters(record):
 
 
 if __name__ == '__main__':
-    owls = set()
+    midnighters = set()
     for record in load_attempts():
-        owl = get_midnighters(record)
-        if owl:
-            owls.add(owl)
-    print('\n'.join(owls))
+        midnighter = is_midnighter(record)
+        if midnighter:
+            midnighters.add(midnighter)
+    print('\n'.join(midnighters))
