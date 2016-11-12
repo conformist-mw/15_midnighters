@@ -1,11 +1,10 @@
 from pytz import timezone
-from datetime import time
-from datetime import datetime
+from datetime import time, datetime
 import requests
 
 
 def load_attempts():
-    pages = 1
+    pages = 10
     url = 'https://devman.org/api/challenges/solution_attempts'
     for page in range(1, pages + 1):
         params = {'page': page}
@@ -15,20 +14,16 @@ def load_attempts():
 
 
 def is_midnighter(record):
-    moscow_tz = timezone('Europe/Moscow')
-    user_tz = timezone(record['timezone'])
     if record['timestamp']:
-        user_dt = user_tz.localize(datetime.fromtimestamp(record['timestamp']))
-        adj_user_dt = user_dt.astimezone(moscow_tz)
-        user_time = time(adj_user_dt.hour, adj_user_dt.minute)
-        if time(00, 00) < user_time < time(6, 00):
-            return record['username']
+        user_time = datetime.fromtimestamp(record['timestamp'],
+                                           timezone(record['timezone']))
+        if time(00, 00) < user_time.time() < time(6, 00):
+            return True
 
 
 if __name__ == '__main__':
     midnighters = set()
     for record in load_attempts():
-        midnighter = is_midnighter(record)
-        if midnighter:
-            midnighters.add(midnighter)
+        if is_midnighter(record):
+            midnighters.add(record['username'])
     print('\n'.join(midnighters))
