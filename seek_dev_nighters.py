@@ -3,8 +3,7 @@ from datetime import time, datetime
 import requests
 
 
-def load_attempts():
-    pages = 10
+def load_attempts(pages=10):
     url = 'https://devman.org/api/challenges/solution_attempts'
     for page in range(1, pages + 1):
         params = {'page': page}
